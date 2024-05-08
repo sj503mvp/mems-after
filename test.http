@@ -1,0 +1,6 @@
+POST http://localhost:7001/login?username=狗头苏丹 HTTP/1.1
+Accept: application/json
+
+###
+GET http://localhost:7001/ HTTP/1.1
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IueLl-WktOiLj-S4uSIsImlhdCI6MTcxNTE1MzE4NX0.Wo4t4BxQcXx7dKQ65EJMppoCyaAlgnV5inJmld-6_1M

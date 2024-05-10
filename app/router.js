@@ -10,4 +10,8 @@ module.exports = app => {
   router.post('/register', controller.login.register);
   // 获得权限
   router.get('/getPowerData', controller.permission.getPermission);
+  // 获取登录用户信息
+  router.get('/getUserInfo', controller.user.getUserInfo);
+  // 编辑用户信息
+  router.post('/editUserInfo', controller.user.editUserInfo);
 };

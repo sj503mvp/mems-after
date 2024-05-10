@@ -7,7 +7,7 @@ class UserController extends Controller {
         const { username, password } = ctx.request.body;
         try {
             const result = await app.mysql.query(
-                `SELECT * FROM userLogin WHERE username=? AND password=?`,
+                `SELECT * FROM userlogin WHERE username=? AND password=?`,
                 [username, password]
             )
             if(result.length > 0) {
@@ -40,7 +40,7 @@ class UserController extends Controller {
         // 获得前端传来的数据
         const { username, password } = ctx.request.body;
         try {
-            const userExists = await app.mysql.query('SELECT * FROM userLogin WHERE username = ?', [username]);
+            const userExists = await app.mysql.query('SELECT * FROM userlogin WHERE username = ?', [username]);
             if(userExists.length > 0) {
                 ctx.body = {
                     code: '401',
@@ -48,7 +48,7 @@ class UserController extends Controller {
                 }
                 return;
             }
-            const sql = 'INSERT INTO userLogin (username, password) VALUES(?, ?)';
+            const sql = 'INSERT INTO userlogin (username, password) VALUES(?, ?)';
             const values = [username, password]
             // 插入后查询一下看是否成功
             const result = await app.mysql.query(sql, values);

@@ -1,6 +1,7 @@
 const { Controller } = require('egg');
 
 class UserInfoController extends Controller {
+    // 个人信息和编辑个人信息
     async getUserInfo() {
         // 获得前端传来的uid
         const { ctx, app } = this;
@@ -68,6 +69,106 @@ class UserInfoController extends Controller {
                 code: 500,
                 msg: '服务器错误'
             }
+        }
+    }
+    // 获得全部人员信息
+    async getAllUserInfo() {
+        const { ctx, app } = this;
+        const { keyword, positionId, factoryId} = ctx.query;
+        const page = parseInt(ctx.query.page);
+        const pageSize = parseInt(ctx.query.pageSize);
+        const offset = parseInt((page - 1) * pageSize);
+        let sql = `SELECT * FROM user`;
+        let sqlCount = `SELECT COUNT(*) AS total_count FROM user`
+        let sqlConditions = [];
+        let values = [];
+        if(keyword) {
+            sqlConditions.push('name LIKE ?');
+            values.push(`%${keyword}%`);
+        }
+        if(positionId) {
+            sqlConditions.push('positionId = ?');
+            values.push(positionId);
+        }
+        if(factoryId) {
+            sqlConditions.push('factoryId = ?');
+            values.push(factoryId);
+        }
+        if(sqlConditions.length > 0) {
+            sql += ' WHERE ' + sqlConditions.join(' AND ');
+            sqlCount += ' WHERE ' + sqlConditions.join(' AND ');
+        }
+        sql += ' ORDER BY uid ASC ';
+        sql += ` LIMIT ? OFFSET ? `;
+        let totalCountResult;
+        try {
+            totalCountResult = await app.mysql.query(sqlCount, values)
+        }catch(error) {
+            ctx.status = 500;
+            ctx.body = { 
+                msg: 'error'
+            };
+        }
+        try {
+            const result = await app.mysql.query(sql, [...values, pageSize, offset]);
+            ctx.body = {
+                code: 200,
+                data: {
+                    count: totalCountResult[0].total_count,
+                    list: result
+                } 
+            }
+        }catch(error) {
+            ctx.status = 500;
+            ctx.body = { 
+                msg: 'error'
+            };
+        }
+    }
+    // 获取全部管理人信息
+    async getAllManagerInfo() {
+        const { ctx, app } = this;
+        const page = parseInt(ctx.query.page);
+        const pageSize = parseInt(ctx.query.pageSize);
+        const keyword = ctx.query.keyword;
+        const offset = parseInt((page - 1) * pageSize);
+        let sql = `SELECT * FROM user WHERE isRoot = 1`;
+        let sqlCount = `SELECT COUNT(*) AS total_count FROM user WHERE isRoot = 1`
+        let sqlConditions = [];
+        let values = [];
+        if(keyword) {
+            sqlConditions.push('name LIKE ?');
+            values.push(`%${keyword}%`);
+        }
+        if(sqlConditions.length > 0) {
+            sql += ' AND ' + sqlConditions.join(' ADD ');
+            sqlCount += ' AND ' + sqlConditions.join(' ADD ');
+        }
+        sql += ' ORDER BY uid ASC ';
+        sql += ' LIMIT ? OFFSET ? ';
+        let totalCountResult;
+        try {
+            totalCountResult = await app.mysql.query(sqlCount, values)
+        }catch(error) {
+            ctx.status = 500;
+            ctx.body = { 
+                msg: 'error'
+            };
+        }
+        try {
+            const result = await app.mysql.query(sql, [...values, pageSize, offset]);
+            ctx.body = {
+                code: 200,
+                data: {
+                    count: totalCountResult[0].total_count,
+                    list: result
+                } 
+            }
+        }catch(error) {
+            ctx.status = 500;
+            ctx.body = { 
+                msg: 'error'
+            };
         }
     }
 }

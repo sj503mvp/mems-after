@@ -14,4 +14,8 @@ module.exports = app => {
   router.get('/getUserInfo', controller.user.getUserInfo);
   // 编辑用户信息
   router.post('/editUserInfo', controller.user.editUserInfo);
+  // 获得全部用户信息
+  router.get('/getAllUserInfo', controller.user.getAllUserInfo)
+  // 获得全部管理员信息
+  router.get('/getAllManagerInfo', controller.user.getAllManagerInfo)
 };

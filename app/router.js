@@ -24,4 +24,9 @@ module.exports = app => {
   router.get('/getAllUserInfo', controller.user.getAllUserInfo);
   // 获得全部管理员信息
   router.get('/getAllManagerInfo', controller.user.getAllManagerInfo);
+
+  // 获得所有用户
+  router.get('/getAllUser', controller.notify.getAllUser);
+  // 保存公告
+  router.post('/saveNotify', controller.notify.saveNotify);
 };

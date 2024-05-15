@@ -29,4 +29,14 @@ module.exports = app => {
   router.get('/getAllUser', controller.notify.getAllUser);
   // 保存公告
   router.post('/saveNotify', controller.notify.saveNotify);
+  // 获得未审批信息
+  router.get('/getNotifyApproval', controller.notify.getNotifyApproval)
+  // 获得所有信息
+  router.get('/getNotifyAll', controller.notify.getNotifyAll)
+  // 审批通知
+  router.post('/approvalNotify', controller.notify.approvalNotify)
+  // 查看通知后插入数据
+  router.post('/checkNotify', controller.notify.checkNotify)
+  // 获得未查看通知数据
+  router.get('/getNotifyUnread', controller.notify.getNotifyUnread)
 };

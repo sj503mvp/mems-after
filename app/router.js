@@ -8,6 +8,9 @@ module.exports = app => {
   router.post('/login', controller.login.login);
   // 注册接口
   router.post('/register', controller.login.register);
+  // 获得userName
+  router.get('/getUserName', controller.login.getUserName);
+
   // 获得权限
   router.get('/getPowerData', controller.permission.getPermission);
   // 修改权限
@@ -50,4 +53,7 @@ module.exports = app => {
     router.get('/getProcessApproved', controller.process.getProcessApproved);
   // 审批流程
   router.post('/approvalProcess', controller.process.approvalProcess);
+
+  // 头部公告信息
+  router.get('/getNoticeInfo', controller.layout.getNoticeInfo)
 };

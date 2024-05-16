@@ -77,6 +77,26 @@ class UserController extends Controller {
             }
         }
     }
+    async getUserName() {
+        const { ctx, app } = this;
+        const uid = parseInt(ctx.query.uid);
+        try {
+            const result = await app.mysql.query(
+                `SELECT * FROM user WHERE uid = ?`,
+                [uid]
+            )
+            ctx.body = {
+                code: 200,
+                data: result[0].name
+            }
+        }catch(error) {
+            ctx.logger.error(error);
+            ctx.body = { 
+                msg: '登录失败,请重试'
+            };
+            ctx.status = 500;
+        }
+    }
 }
 
 module.exports = UserController;

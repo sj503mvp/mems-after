@@ -1,33 +1,12 @@
 const { Controller } = require('egg');
 
-class NotifyController extends Controller {
-    async getAllUser() {
+class ProcessController extends Controller {
+    async saveProcess() {
         const { ctx, app } = this;
-        try {
-            const result = await app.mysql.query(
-                'SELECT * FROM user'
-            )
-            ctx.body = {
-                code: 200,
-                data: result,
-            }
-        }catch(error) {
-            ctx.logger.error(error);
-            ctx.body = { 
-                msg: '服务器错误'
-            };
-            ctx.status = 500;
-        }
-    }
-    /**
-     * 保存公告
-     */
-    async saveNotify() {
-        const { ctx, app } = this;
-        let { notifyTitle, notifyContent, notifyStatus, notifyTime, userId, publisher } = ctx.request.body;
-        try {
-            const sql = `INSERT INTO notify (title, content, status, time, userId, publisher, approvalStatus) VALUES(?, ?, ?, ?, ?, ?, ?)`;
-            const values = [ notifyTitle, notifyContent, notifyStatus, notifyTime , parseInt(userId), publisher, '0' ]
+        let { processTitle, processContent, processType, processTime, userId, proposer } = ctx.request.body;
+        try{
+            const sql = `INSERT INTO process (title, content, approvalType, time, userId, proposer, approvalStatus) VALUES (?, ?, ?, ?, ?, ?, ?)`;
+            const values = [ processTitle, processContent, processType, processTime, parseInt(userId), proposer, '0' ]
             const result = await app.mysql.query(sql, values)
             if(result.affectedRows > 0) {
                 ctx.body = {
@@ -44,25 +23,27 @@ class NotifyController extends Controller {
             }
         }
     }
+
     /**
-     * 获得未审批通知信息  
+     * 获得未审批流程
      */
-    async getNotifyApproval() {
+    async getProcessApproval() {
         const { ctx, app } = this;
         let params = JSON.parse(ctx.query[0]);
         const page = parseInt(params.page);
         const pageSize = parseInt(params.pageSize);
         const keyword = params.keyword;
-        const notifyTime = params.notifyTime;
+        const processTime = params.processTime;
+        const processType = params.processType;
         let startTime;
         let endTime;
-        if(Array.isArray(notifyTime) && notifyTime.length > 0) {
-            startTime = notifyTime[0];
-            endTime = notifyTime[1];
+        if(Array.isArray(processTime) && processTime.length > 0) {
+            startTime = processTime[0];
+            endTime = processTime[1];
         }
         const offset = parseInt((page - 1) * pageSize);
-        let sql = `SELECT * FROM notify WHERE approvalStatus = 0`;
-        let sqlCount = `SELECT COUNT(*) AS total_count FROM notify WHERE approvalStatus = 0`
+        let sql = `SELECT * FROM process WHERE approvalStatus = 0`;
+        let sqlCount = `SELECT COUNT(*) AS total_count FROM process WHERE approvalStatus = 0 `
         let sqlConditions = [];
         let values = [];
         if(keyword) {
@@ -73,6 +54,10 @@ class NotifyController extends Controller {
             sqlConditions.push('DATE(time) BETWEEN ? AND ?')
             values.push(startTime);
             values.push(endTime);
+        }
+        if(processType) {
+            sqlConditions.push('approvalType = ?');
+            values.push(processType);
         }
         if(sqlConditions.length > 0) {
             sql +=  ' AND ' + sqlConditions.join(' AND ');
@@ -99,7 +84,7 @@ class NotifyController extends Controller {
                 } 
             }
         }catch(error) {
-            ctx.logger.error(error);
+            ctx.logger.error('error',error);
             ctx.body = { 
                 msg: '服务器错误'
             };
@@ -107,26 +92,28 @@ class NotifyController extends Controller {
         }
     }
     /**
-     * 获得所有通知信息  
+     * 获得我发起的审批流程
      */
-    async getNotifyAll() {
+    async getProcessCreated() {
         const { ctx, app } = this;
         let params = JSON.parse(ctx.query[0]);
         const page = parseInt(params.page);
         const pageSize = parseInt(params.pageSize);
         const keyword = params.keyword;
-        const notifyTime = params.notifyTime;
+        const processTime = params.processTime;
+        const processType = params.processType;
+        const userId = parseInt(params.userId);
         let startTime;
         let endTime;
-        if(Array.isArray(notifyTime) && notifyTime.length > 0) {
-            startTime = notifyTime[0];
-            endTime = notifyTime[1];
+        if(Array.isArray(processTime) && processTime.length > 0) {
+            startTime = processTime[0];
+            endTime = processTime[1];
         }
         const offset = parseInt((page - 1) * pageSize);
-        let sql = `SELECT * FROM notify WHERE approvalStatus = 1`;
-        let sqlCount = `SELECT COUNT(*) AS total_count FROM notify WHERE approvalStatus = 1`
+        let sql = `SELECT * FROM process WHERE userId = ?`;
+        let sqlCount = `SELECT COUNT(*) AS total_count FROM process WHERE userId = ?`;
         let sqlConditions = [];
-        let values = [];
+        let values = [userId];
         if(keyword) {
             sqlConditions.push('title LIKE ?')
             values.push(`%${keyword}%`);
@@ -135,6 +122,10 @@ class NotifyController extends Controller {
             sqlConditions.push('DATE(time) BETWEEN ? AND ?')
             values.push(startTime);
             values.push(endTime);
+        }
+        if(processType) {
+            sqlConditions.push('approvalType = ?');
+            values.push(processType);
         }
         if(sqlConditions.length > 0) {
             sql +=  ' AND ' + sqlConditions.join(' AND ');
@@ -170,13 +161,81 @@ class NotifyController extends Controller {
     }
 
     /**
-     * 审批通知
+     * 我审批的流程
      */
-    async approvalNotify() {
+    async getProcessApproved() {
         const { ctx, app } = this;
-        const { uid, id, type } = ctx.request.body;
+        let params = JSON.parse(ctx.query[0]);
+        const page = parseInt(params.page);
+        const pageSize = parseInt(params.pageSize);
+        const keyword = params.keyword;
+        const processTime = params.processTime;
+        const processType = params.processType;
+        const userId = parseInt(params.userId);
+        let startTime;
+        let endTime;
+        if(Array.isArray(processTime) && processTime.length > 0) {
+            startTime = processTime[0];
+            endTime = processTime[1];
+        }
+        const offset = parseInt((page - 1) * pageSize);
+        let sql = `SELECT * FROM process WHERE approvalUserId = ?`;
+        let sqlCount = `SELECT COUNT(*) AS total_count FROM process WHERE approvalUserId = ?`;
+        let sqlConditions = [];
+        let values = [userId];
+        if(keyword) {
+            sqlConditions.push('title LIKE ?')
+            values.push(`%${keyword}%`);
+        }
+        if(startTime && endTime) {
+            sqlConditions.push('DATE(time) BETWEEN ? AND ?')
+            values.push(startTime);
+            values.push(endTime);
+        }
+        if(processType) {
+            sqlConditions.push('approvalType = ?');
+            values.push(processType);
+        }
+        if(sqlConditions.length > 0) {
+            sql +=  ' AND ' + sqlConditions.join(' AND ');
+            sqlCount += ' AND ' +  sqlConditions.join(' AND ');
+        }
+        sql += ' ORDER BY id DESC ';
+        sql += ` LIMIT ? OFFSET ? `;
+        let totalCountResult;
         try {
-            const sql = 'UPDATE notify SET approvalStatus = ?, approvalUserId = ? WHERE id = ?'
+            totalCountResult = await app.mysql.query(sqlCount, values)
+        }catch(error) {
+            ctx.status = 500;
+            ctx.body = { 
+                msg: 'error'
+            };
+        }
+        try {
+            const result = await app.mysql.query(sql, [...values, pageSize, offset]);
+            ctx.body = {
+                code: 200,
+                data: {
+                    count: totalCountResult[0].total_count,
+                    list: result
+                } 
+            }
+        }catch(error) {
+            ctx.logger.error(error);
+            ctx.body = { 
+                msg: '服务器错误'
+            };
+            ctx.status = 500;
+        }
+    }
+    /**
+     * 审批流程
+     */
+    async approvalProcess() {
+        const { ctx, app } = this;
+        const { uid, id ,type } = ctx.request.body;
+        try {
+            const sql = 'UPDATE process SET approvalStatus = ?, approvalUserId = ? WHERE id = ?'
             const values = [type, uid, id];
             const result = await app.mysql.query(sql, values);
             if(result.affectedRows > 0) {
@@ -198,100 +257,6 @@ class NotifyController extends Controller {
             }
         }
     }
-
-    /**
-     * 查看通知
-     */
-    async checkNotify() {
-        const { ctx, app } = this;
-        const { userId, notifyId } = ctx.request.body;
-        try {
-            const existsRows = await app.mysql.query(
-                'SELECT * FROM user_notify_read WHERE userId = ? AND notifyId = ?',
-                [userId, notifyId]
-            )
-            if(existsRows.length == 0) {
-                await app.mysql.query(
-                    'INSERT INTO user_notify_read (userId, notifyId) VALUES (?, ?)',
-                    [ userId, notifyId ]
-                )
-            }
-            ctx.body = {
-                code: 200,
-                msg: '查看成功'
-            }
-        }catch(error) {
-            ctx.status = 500;
-            ctx.body = {
-                code: 500,
-                msg: '服务器错误'
-            }
-        }
-    }
-
-    /**
-     * 获得未查看通知
-     */
-    async getNotifyUnread() {
-        const { ctx, app } = this;
-        const params = JSON.parse(ctx.query[0]);
-        const page = parseInt(params.page);
-        const pageSize = parseInt(params.pageSize);
-        const keyword = params.keyword;
-        const notifyTime = params.notifyTime;
-        const uid = parseInt(params.uid);
-        let startTime;
-        let endTime;
-        if(Array.isArray(notifyTime) && notifyTime.length > 0) {
-            startTime = notifyTime[0];
-            endTime = notifyTime[1];
-        }
-        const offset = parseInt((page - 1) * pageSize);
-        let sql = `SELECT n.* FROM notify n WHERE approvalStatus = 1 AND NOT EXISTS ( SELECT 1 FROM user_notify_read unr WHERE unr.notifyId = n.id AND unr.userId = ?)`;
-        let sqlCount = `SELECT COUNT(*) AS total_count FROM notify n WHERE approvalStatus = 1 AND NOT EXISTS ( SELECT 1 FROM user_notify_read unr WHERE unr.notifyId = n.id AND unr.userId = ? )`
-        let sqlConditions = [];
-        let values = [uid];
-        if(keyword) {
-            sqlConditions.push('n.title LIKE ?')
-            values.push(`%${keyword}%`);
-        }
-        if(startTime && endTime) {
-            sqlConditions.push('n.time BETWEEN ? AND ?')
-            values.push(startTime);
-            values.push(endTime);
-        }
-        if(sqlConditions.length > 0) {
-            sql +=  ' AND ' + sqlConditions.join(' AND ');
-            sqlCount += ' AND ' +  sqlConditions.join(' AND ');
-        }
-        sql += ' ORDER BY n.id DESC ';
-        sql += ` LIMIT ? OFFSET ? `;
-        let totalCountResult;
-        try {
-            totalCountResult = await app.mysql.query(sqlCount, values)
-        }catch(error) {
-            ctx.status = 500;
-            ctx.body = { 
-                msg: 'error'
-            };
-        }
-        try{
-            const result = await app.mysql.query(sql, [...values, pageSize, offset]);
-            ctx.body = {
-                code: 200,
-                data: {
-                    count: totalCountResult[0].total_count,
-                    list: result
-                } 
-            }
-        }catch(error) {
-            ctx.logger.error(error);
-            ctx.body = { 
-                msg: '服务器错误'
-            };
-            ctx.status = 500;
-        }
-    }
 }
 
-module.exports = NotifyController;
+module.exports = ProcessController;

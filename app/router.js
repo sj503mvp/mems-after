@@ -39,4 +39,15 @@ module.exports = app => {
   router.post('/checkNotify', controller.notify.checkNotify)
   // 获得未查看通知数据
   router.get('/getNotifyUnread', controller.notify.getNotifyUnread)
+
+  // 保存流程
+  router.post('/saveProcess', controller.process.saveProcess);
+  // 获得我发起的流程
+  router.get('/getProcessCreated', controller.process.getProcessCreated);
+  // 获得未审批流程
+  router.get('/getProcessApproval', controller.process.getProcessApproval);
+    // 获得我审批的流程
+    router.get('/getProcessApproved', controller.process.getProcessApproved);
+  // 审批流程
+  router.post('/approvalProcess', controller.process.approvalProcess);
 };

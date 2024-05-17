@@ -122,7 +122,6 @@ class DeviceController extends Controller {
         sql += ' ORDER BY id DESC ';
         sql += ` LIMIT ? OFFSET ? `;
         let totalCountResult;
-        console.log(sqlCount,sql,values,'qwe');
         try {
             totalCountResult = await app.mysql.query(sqlCount, values)
         }catch(error) {
@@ -157,6 +156,49 @@ class DeviceController extends Controller {
                     count: totalCountResult[0].total_count,
                     list: newResult
                 } 
+            }
+        }catch(error) {
+            ctx.logger.error(error);
+            ctx.body = { 
+                msg: '服务器错误'
+            };
+            ctx.status = 500;
+        }
+    }
+
+    async getDeviceInfo() {
+        const { ctx, app } = this;
+        const id = parseInt(ctx.query.deviceId);
+        try {
+            const result = await app.mysql.query(
+                `SELECT * FROM device WHERE id = ?`,
+                [id]
+            )
+            ctx.body = {
+                code: 200,
+                data: result[0]
+            }
+        }catch(error) {
+            ctx.logger.error(error);
+            ctx.body = { 
+                msg: '服务器错误'
+            };
+            ctx.status = 500;
+        }
+    }
+
+    async isFocus() {
+        const { ctx, app } = this;
+        const userId = parseInt(ctx.query.userId);
+        const deviceId = parseInt(ctx.query.deviceId);
+        try{
+            const result = await app.mysql.query(
+                `SELECT * FROM user_device_focus WHERE userId = ? AND deviceId = ?`,
+                [userId, deviceId]
+            )
+            ctx.body = {
+                code: 200,
+                isFocus: result.length>0? true : false
             }
         }catch(error) {
             ctx.logger.error(error);

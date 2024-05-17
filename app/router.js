@@ -17,7 +17,10 @@ module.exports = app => {
   router.post('/saveDeviceInfo', controller.device.saveDeviceInfo);
   // 获得待处理列表
   router.get('/getPendingDevice', controller.device.getPendingDevice);
-
+  // 设备详细信息
+  router.get('/getDeviceInfo', controller.device.getDeviceInfo);
+  // 设备是否关注
+  router.get('/isFocus', controller.device.isFocus)
 
   // 获得权限
   router.get('/getPowerData', controller.permission.getPermission);

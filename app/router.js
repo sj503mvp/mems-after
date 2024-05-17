@@ -11,6 +11,14 @@ module.exports = app => {
   // 获得userName
   router.get('/getUserName', controller.login.getUserName);
 
+  // 录入设备的用户列表
+  router.get('/getAllUserList', controller.device.getAllUserList);
+  // 保存设备信息
+  router.post('/saveDeviceInfo', controller.device.saveDeviceInfo);
+  // 获得待处理列表
+  router.get('/getPendingDevice', controller.device.getPendingDevice);
+
+
   // 获得权限
   router.get('/getPowerData', controller.permission.getPermission);
   // 修改权限

@@ -10,6 +10,10 @@ module.exports = app => {
   router.post('/register', controller.login.register);
   // 获得userName
   router.get('/getUserName', controller.login.getUserName);
+  // 获得首页饼状图数据
+  router.get('/getHomePieData', controller.home.getHomePieData);
+  // 获得每月设备数据
+  router.get('/getAllDevice', controller.home.getAllDevice);
 
   // 录入设备的用户列表
   router.get('/getAllUserList', controller.device.getAllUserList);
@@ -47,6 +51,9 @@ module.exports = app => {
   router.post('/pushItemConfrim', controller.device.pushItemConfrim)
   // 确认状态
   router.post('/confrimDevice', controller.device.confrimDevice)
+  // 获得设备维修信息
+  router.get('/getFitReason', controller.device.getFitReason) 
+
 
   // 获得权限
   router.get('/getPowerData', controller.permission.getPermission);

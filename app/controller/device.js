@@ -959,6 +959,67 @@ class DeviceController extends Controller {
             ctx.status = 500;
         }
     }
+
+    async getFitReason() {
+        const { ctx, app } = this;
+        const deviceId = parseInt(ctx.query.id)
+        try {
+            const result = await app.mysql.query(
+                'SELECT * FROM device_repair WHERE deviceId = ?',
+                [deviceId]
+            )
+            if(result.length > 0) {
+                let seriesData = [
+                    { value: parseInt(result[0].firstReasonCount) || 0, name: '设备故障' },    
+                    { value: parseInt(result[0].secondReasonCount) || 0, name: '原材料问题' },    
+                    { value: parseInt(result[0].thirdReasonCount) || 0, name: '设备的制造和安装质量问题' },    
+                    { value: parseInt(result[0].fourReasonCount) || 0, name: '设备的过度损耗' }  
+                ]
+                seriesData = seriesData.filter(item => item.value > 0)
+                ctx.body = {
+                    code: 200,
+                    data: {
+                        title: {
+                            text: '所有维修原因',
+                            left: 'center'
+                        },
+                        tooltip: {
+                            trigger: 'item',
+                            formatter: '{a} <br/>{b} : {c} ({d}%)'
+                        },
+                        legend: {
+                            left: 'center',
+                            top: 'bottom',
+                        },
+                        series: [
+                            {
+                                name: '维修原因及比例',
+                                type: 'pie',
+                                radius: [20, 140],
+                                center: ['50%', '50%'],
+                                roseType: 'area',
+                                itemStyle: {
+                                    borderRadius: 5
+                                },
+                                data: seriesData
+                            }
+                        ]
+                    }
+                }
+            }else {
+                ctx.body = {
+                    code: 200,
+                    msg: '暂无数据'
+                }
+            }
+        }catch(error) {
+            console.error('Error updating device:', error);
+            ctx.body = { 
+                msg: '服务器错误'
+            };
+            ctx.status = 500;
+        }
+    }
 }
 
 module.exports = DeviceController

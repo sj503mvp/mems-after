@@ -15,12 +15,38 @@ module.exports = app => {
   router.get('/getAllUserList', controller.device.getAllUserList);
   // 保存设备信息
   router.post('/saveDeviceInfo', controller.device.saveDeviceInfo);
+  // 编辑设备信息
+  router.post('/editDeviceInfo',controller.device.editUserInfo);
   // 获得待处理列表
   router.get('/getPendingDevice', controller.device.getPendingDevice);
+  // 获得回收站列表
+  router.get('/getRecycleDevice', controller.device.getRecycleDevice);
+  // 获得全部列表
+  router.get('/getAllDevice', controller.device.getAllDevice);
+  // 获得全部列表-跟进中
+  router.get('/getAllFollowDevice', controller.device.getAllFollowDevice);
+  // 获得我的设备-我录入的
+  router.get('/getMyInputDevice', controller.device.getMyInputDevice);
+  // 获得我的设备-跟进中的
+  router.get('/getmyFollowDevice', controller.device.getmyFollowDevice);
+  // 获得我的设备-我关注的
+  router.get('/getMyCollectionDevice', controller.device.getMyCollectionDevice);
   // 设备详细信息
   router.get('/getDeviceInfo', controller.device.getDeviceInfo);
   // 设备是否关注
   router.get('/isFocus', controller.device.isFocus)
+  // 快速编辑名称
+  router.post('/quickSave', controller.device.quickSave);
+  // 关注
+  router.post('/toFocus', controller.device.toFocus);
+  // 获得推送人员列表
+  router.get('/getPushList', controller.device.getPushList)
+  // 推送项目
+  router.post('/pushItem', controller.device.pushItem)
+  // 推送项目
+  router.post('/pushItemConfrim', controller.device.pushItemConfrim)
+  // 确认状态
+  router.post('/confrimDevice', controller.device.confrimDevice)
 
   // 获得权限
   router.get('/getPowerData', controller.permission.getPermission);

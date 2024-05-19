@@ -125,7 +125,7 @@ class HomeController extends Controller {
         }
     }
 
-    async getAllDevice() {
+    async getAllDeviceInfo() {
         const { ctx, app } = this;
         try {
             const results = await app.mysql.query(

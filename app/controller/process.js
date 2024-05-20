@@ -3,15 +3,28 @@ const { Controller } = require('egg');
 class ProcessController extends Controller {
     async saveProcess() {
         const { ctx, app } = this;
-        let { processTitle, processContent, processType, processTime, userId, proposer } = ctx.request.body;
+        let { processTitle, processType, processTime, userId, proposer, productor, deviceName, buyCount, buyMoney, unitId, deviceType, scrapDevice } = ctx.request.body;
+        console.log(ctx.request.body,'qwe');
         try{
-            const sql = `INSERT INTO process (title, content, approvalType, time, userId, proposer, approvalStatus) VALUES (?, ?, ?, ?, ?, ?, ?)`;
-            const values = [ processTitle, processContent, processType, processTime, parseInt(userId), proposer, '0' ]
-            const result = await app.mysql.query(sql, values)
-            if(result.affectedRows > 0) {
-                ctx.body = {
-                    code: 200,
-                    msg: '提交成功',
+            if(processType == '1') {
+                const sql = `INSERT INTO process (title, approvalType, time, userId, proposer, productor, deviceName, buyCount, buyMoney, unitId, deviceType, approvalStatus) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
+                const values = [ processTitle, processType, processTime, parseInt(userId), proposer, productor, deviceName, buyCount, buyMoney, unitId, deviceType, '0' ]
+                const result = await app.mysql.query(sql, values)
+                if(result.affectedRows > 0) {
+                    ctx.body = {
+                        code: 200,
+                        msg: '提交成功',
+                    }
+                }
+            }else {
+                const sql =  `INSERT INTO process (title, approvalType, time, userId, proposer, scrapDevice, approvalStatus) VALUES (?, ?, ?, ?, ?, ?, ?)`;
+                const values = [ processTitle, processType, processTime, parseInt(userId), proposer, scrapDevice, '0' ]
+                const result = await app.mysql.query(sql, values)
+                if(result.affectedRows > 0) {
+                    ctx.body = {
+                        code: 200,
+                        msg: '提交成功'
+                    }
                 }
             }
         }catch(error) {
@@ -233,12 +246,18 @@ class ProcessController extends Controller {
      */
     async approvalProcess() {
         const { ctx, app } = this;
-        const { uid, id ,type } = ctx.request.body;
+        const { uid, id ,type, deviceId } = ctx.request.body;
         try {
             const sql = 'UPDATE process SET approvalStatus = ?, approvalUserId = ? WHERE id = ?'
             const values = [type, uid, id];
             const result = await app.mysql.query(sql, values);
             if(result.affectedRows > 0) {
+                if(type == '1' && deviceId) {
+                    const deviceResult = await app.mysql.query(
+                        'UPDATE device SET status = 5 WHERE id = ?',
+                        [parseInt(deviceId)]
+                    )
+                }
                 ctx.body = {
                     code: 200,
                     msg: '审批成功'

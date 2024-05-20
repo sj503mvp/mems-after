@@ -53,7 +53,10 @@ module.exports = app => {
   router.post('/confrimDevice', controller.device.confrimDevice)
   // 获得设备维修信息
   router.get('/getFitReason', controller.device.getFitReason) 
-
+  // 获得未报废设备信息
+  router.get('/getDeviceList', controller.device.getDeviceList)
+  // 获得报废申请的名称
+  router.get('/getDeviceName', controller.device.getDeviceName)
 
   // 获得权限
   router.get('/getPowerData', controller.permission.getPermission);

@@ -933,6 +933,9 @@ class DeviceController extends Controller {
                 const values = [status, lastFitTime, deviceId];
                 await app.mysql.query(sql, values)
                 const deviceReasonExists = await app.mysql.query('SELECT * FROM device_repair WHERE deviceId = ?', [deviceId]);
+                const recordSql = 'INSERT INTO repair_record (deviceId, repairTime) VALUES (?, ?)';
+                const recordValues = [deviceId, lastFitTime];
+                await app.mysql.query(recordSql, recordValues);
                 if(deviceReasonExists.length > 0) {
                     const sqlRepair = 'UPDATE device_repair SET firstReasonCount = firstReasonCount + ?, secondReasonCount = secondReasonCount + ?, thirdReasonCount = thirdReasonCount + ?, fourReasonCount = fourReasonCount + ? WHERE deviceId = ?';
                     const repairValues = [firstCount, secondCount, thirdCount, fourCount]
@@ -1011,6 +1014,46 @@ class DeviceController extends Controller {
                     code: 200,
                     msg: '暂无数据'
                 }
+            }
+        }catch(error) {
+            console.error('Error updating device:', error);
+            ctx.body = { 
+                msg: '服务器错误'
+            };
+            ctx.status = 500;
+        }
+    }
+
+    async getDeviceList() {
+        const { ctx, app } = this;
+        try{
+            const result = await app.mysql.query(
+                'SELECT * FROM device WHERE status != 5'
+            )
+            ctx.body = {
+                code: 200,
+                data: result
+            }
+        }catch(error) {
+            console.error('Error updating device:', error);
+            ctx.body = { 
+                msg: '服务器错误'
+            };
+            ctx.status = 500;
+        }
+    }
+
+    async getDeviceName() {
+        const { ctx, app } = this;
+        const deviceId = parseInt(ctx.query.deviceId)
+        try {
+            const result = await app.mysql.query(
+                'SELECT * FROM device WHERE id = ?',
+                [deviceId]
+            )
+            ctx.body = {
+                code: 200,
+                data: result[0].name
             }
         }catch(error) {
             console.error('Error updating device:', error);

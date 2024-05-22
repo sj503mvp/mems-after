@@ -30,20 +30,20 @@ class UserInfoController extends Controller {
         const { uid, name, factoryId, positionId, phone, email, descText, img} = ctx.request.body;
         let factory = '总部';
         let position = '设备管理员';
-        if(factoryId == 1) {
+        if(factoryId == '1') {
             factory = '总部'
-        }else if(factoryId == 2) {
+        }else if(factoryId == '2') {
             factory = '华东冶炼一厂'
-        }else if(factoryId == 3) {
+        }else if(factoryId == '3') {
             factory = '华南轧制二厂'
-        }else if(factoryId == 4) {
+        }else if(factoryId == '4') {
             factory = '华东连铸三厂'
-        }else if(factoryId == 5) {
+        }else if(factoryId == '5') {
             factory = '华北冶炼四厂'
-        }else if(factoryId == 6) {
+        }else if(factoryId == '6') {
             factory = '华南冶炼五厂'
         }
-        if(positionId == 1) {
+        if(positionId == '1') {
             position = '设备管理员'
         }else {
             position = '维修人员'
@@ -64,6 +64,7 @@ class UserInfoController extends Controller {
                 }
             }
         }catch(error) {
+            console.error(error)
             ctx.status = 500;
             ctx.body = {
                 code: 500,

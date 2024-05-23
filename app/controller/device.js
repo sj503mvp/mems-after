@@ -71,7 +71,7 @@ class DeviceController extends Controller {
         }else if(sourceId == '5') {
             source = '自主研发与制造'
         }
-        const sql = `INSERT INTO device (name, typeId, type, status, ownFactoryId, ownFactory, buyTime, unitId, unit, followUserId, recordUserId, buyMoney, productor, introduce, sourceId, source) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
+        const sql = `INSERT INTO device (name, typeId, type, status, ownFactoryId, ownFactory, buyTime, unitId, unit, followUserId, recordUserId, buyMoney, productor, introduce, sourceId, source) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
         const values = [name, typeId, type, '1', ownFactoryId, ownFactory, buyTime, unitId, unit, parseInt(recordUserId), parseInt(recordUserId), buyMoney, productor, introduce, sourceId, source];
         try {
             const results = await app.mysql.query(sql, values);
@@ -82,6 +82,7 @@ class DeviceController extends Controller {
                 }
             }
         }catch(error) {
+            ctx.logger.error(error);
             ctx.body = {
                 code: 500,
                 msg: '服务器错误，请稍后再试'
@@ -142,8 +143,8 @@ class DeviceController extends Controller {
         }
         const sql = `UPDATE device SET name = ?, typeId = ?, type = ?, status = ?, ownFactoryId = ?, ownFactory = ?, buyTime = ?, unitId = ?, unit = ?, followUserId = ?, recordUserId = ?, buyMoney = ?, productor = ?, introduce = ?, sourceId = ?, source = ? WHERE id = ?`;
         const values = [name, typeId, type, status, ownFactoryId, ownFactory, buyTime, unitId, unit, parseInt(recordUserId), parseInt(followUserId), buyMoney, productor, introduce, sourceId, source, parseInt(id)];
+        const result = await app.mysql.query(sql, values);
         try{
-            const result = await app.mysql.query(sql, values);
             if(result.affectedRows > 0) {
                 ctx.body = {
                     code: 200,
@@ -151,6 +152,7 @@ class DeviceController extends Controller {
                 }
             }
         }catch(error) {
+            ctx.logger.error(error);
             ctx.body = {
                 code: 500,
                 msg: '服务器错误，请稍后再试'

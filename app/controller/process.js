@@ -4,7 +4,6 @@ class ProcessController extends Controller {
     async saveProcess() {
         const { ctx, app } = this;
         let { processTitle, processType, processTime, userId, proposer, productor, deviceName, buyCount, buyMoney, unitId, deviceType, scrapDevice } = ctx.request.body;
-        console.log(ctx.request.body,'qwe');
         try{
             if(processType == '1') {
                 const sql = `INSERT INTO process (title, approvalType, time, userId, proposer, productor, deviceName, buyCount, buyMoney, unitId, deviceType, approvalStatus) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;

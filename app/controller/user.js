@@ -49,7 +49,7 @@ class UserInfoController extends Controller {
             position = '维修人员'
         }
         try {
-            const sql = 'UPDATE user SET name=?, factoryId=?, factory=?, positionId=?, position=?, phone=?, email=?, descText=?, img=? WHERE uid=?'
+            const sql = 'UPDATE user SET name=?, factoryId=?, factory=?, positionId=?, position=?, phone=?, email=?, descText=?, img=?, isRoot = 0 WHERE uid=?'
             const values = [name, factoryId, factory, positionId, position, phone, email, descText, img, uid]
             const results = await app.mysql.query(sql, values);
             if(results.affectedRows > 0) {

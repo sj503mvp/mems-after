@@ -26,7 +26,7 @@ class PermissionController extends Controller {
     }
     async changePermission() {
         const { ctx, app } = this;
-        const { uid, hasNotifyApproval, hasProcessApproval, hasChangePermission } = ctx.request.body;
+        const { uid, hasNotifyApproval, hasProcessApproval, hasChangePermission, hasFeedback } = ctx.request.body;
         try {
             if(!uid) {
                 ctx.body = {
@@ -35,11 +35,12 @@ class PermissionController extends Controller {
                 }
                 return
             }
-            const sql = 'UPDATE permission SET hasNotifyApproval=?, hasProcessApproval=?, hasChangePermission=? WHERE uid = ?'
+            const sql = 'UPDATE permission SET hasNotifyApproval=?, hasProcessApproval=?, hasChangePermission=?, hasFeedback=? WHERE uid = ?'
             const values = [
                 hasNotifyApproval  == 'true'? 'hasNotifyApproval' : null,
                 hasProcessApproval == 'true'? 'hasProcessApproval' : null,
                 hasChangePermission  == 'true'? 'hasChangePermission' : null,
+                hasFeedback  == 'true'? 'hasFeedback' : null,
                 parseInt(uid),
             ]
             const results = await app.mysql.query(sql, values);
@@ -87,11 +88,11 @@ class PermissionController extends Controller {
         let sqlTwo;
         if(type == 'add') {
             sql = 'UPDATE user SET isRoot = 1 WHERE uid = ?'
-            sqlTwo = 'UPDATE permission SET hasChangePermission = \'hasChangePermission\' WHERE uid = ? '
+            sqlTwo = 'UPDATE permission SET hasChangePermission = \'hasChangePermission\', hasFeedback = \'hasFeedback\' WHERE uid = ? '
         }
         if(type == 'delete') {
             sql = 'UPDATE user SET isRoot = 0 WHERE uid = ?'
-            sqlTwo = 'UPDATE permission SET hasChangePermission = NULL WHERE uid = ? '
+            sqlTwo = 'UPDATE permission SET hasChangePermission = NULL, hasFeedback = NULL WHERE uid = ? '
         }
         try {
             const result = await app.mysql.query(sql, [uid]);

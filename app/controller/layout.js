@@ -67,6 +67,28 @@ class LayoutController extends Controller {
             ctx.status = 500;
         }
     }
+
+    async saveProblemFeedback() {
+        const { ctx, app } = this;
+        const { username, phone, url, content, time } = ctx.request.body;
+        try {
+            const sql = 'INSERT INTO feedback (username, phone, url, content, time) VALUES (?, ?, ?, ?, ?)';
+            const values = [username, phone, url, content, time]
+            const result = await app.mysql.query(sql, values);
+            if(result.affectedRows > 0) {
+                ctx.body = {
+                    code: 200,
+                    msg: '反馈成功'
+                }
+            }
+        }catch(error) {
+            ctx.status = 500;
+            ctx.body = {
+                code: 500,
+                msg: '服务器错误'
+            }
+        }
+    }
 }
 
 module.exports = LayoutController;

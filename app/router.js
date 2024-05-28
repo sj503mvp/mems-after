@@ -105,4 +105,8 @@ module.exports = app => {
   router.get('/getNoticeInfo', controller.layout.getNoticeInfo);
   // 侧边栏徽标数
   router.get('/getSidebarNumber', controller.layout.getSidebarNumber)
+  // 反馈信息
+  router.post('/saveProblemFeedback', controller.layout.saveProblemFeedback)
+
+  router.get('/getFeedbackData', controller.feedback.getFeedbackData)
 };

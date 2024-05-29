@@ -10,6 +10,11 @@ module.exports = app => {
   router.post('/register', controller.login.register);
   // 获得userName
   router.get('/getUserName', controller.login.getUserName);
+  // 存储登录日志
+  router.post('/saveLoginData', controller.login.saveLoginData);
+  // 获得登录日志
+  router.get('/getLoginData', controller.login.getLoginData);
+
   // 获得首页饼状图数据
   router.get('/getHomePieData', controller.home.getHomePieData);
   // 获得每月设备数据

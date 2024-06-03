@@ -94,6 +94,8 @@ module.exports = app => {
   router.post('/checkNotify', controller.notify.checkNotify)
   // 获得未查看通知数据
   router.get('/getNotifyUnread', controller.notify.getNotifyUnread)
+  // 批量已读未查看通知
+  router.post('/readAllNotify', controller.notify.readAllNotify)
 
   // 保存流程
   router.post('/saveProcess', controller.process.saveProcess);

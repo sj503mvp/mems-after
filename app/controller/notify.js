@@ -292,6 +292,33 @@ class NotifyController extends Controller {
             ctx.status = 500;
         }
     }
+
+    /**
+     * 批量已读
+     */
+    async readAllNotify() {
+        const { ctx, app } = this;
+        const { allNotifyId, userId } = ctx.request.body;
+        try {
+            const transaction = await app.mysql.beginTransaction();
+            const sql = 'INSERT INTO user_notify_read (userId, notifyId) VALUES (?, ?)';
+            for(const notifyId of allNotifyId) {
+                const result = await transaction.query(sql, [parseInt(userId), parseInt(notifyId)])
+            }
+            await transaction.commit();
+            ctx.body = {
+                code: 200,
+                msg: '全部已读'
+            }
+        }catch(error) {
+            ctx.logger.error(error);
+            ctx.body = { 
+                msg: '服务器错误'
+            };
+            ctx.status = 500;
+        }
+        
+    }
 }
 
 module.exports = NotifyController;

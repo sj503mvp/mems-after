@@ -63,6 +63,13 @@ module.exports = app => {
   // 获得报废申请的名称
   router.get('/getDeviceName', controller.device.getDeviceName)
 
+  // 获得备品备件
+  router.get('/getSpareParts', controller.spareParts.getSpareParts)
+  // 存储备品备件
+  router.post('/saveSpareParts', controller.spareParts.saveSpareParts)
+  // 修改备品备件数量
+  router.post('/changeSpareParts', controller.spareParts.changeSpareParts)
+
   // 获得权限
   router.get('/getPowerData', controller.permission.getPermission);
   // 修改权限

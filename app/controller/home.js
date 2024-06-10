@@ -41,8 +41,9 @@ class HomeController extends Controller {
                             trigger: 'item'
                         },
                         legend: {
-                            orient: 'vertical',
-                            left: 'left'
+                            orient: 'horizontal',
+                            left: 'left',
+                            top: 'bottom'
                         },
                         series: [{
                             name: '设备数量',
@@ -97,8 +98,9 @@ class HomeController extends Controller {
                             trigger: 'item'
                         },
                         legend: {
-                            orient: 'vertical',
-                            left: 'left'
+                            orient: 'horizontal',
+                            left: 'left',
+                            top: 'bottom'
                         },
                         series: [{
                             name: '设备状态',

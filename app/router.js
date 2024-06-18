@@ -78,10 +78,14 @@ module.exports = app => {
   router.post('/getUnrootUser', controller.permission.getUnrootUser);
   // 修改权限的权限
   router.post('/changePermission', controller.permission.toChangePermission)
+
+  // 个人信息详情页使用
   // 获取登录用户信息
   router.get('/getUserInfo', controller.user.getUserInfo);
   // 编辑用户信息
   router.post('/editUserInfo', controller.user.editUserInfo);
+
+  // 前端权限模块使用
   // 获得全部用户信息
   router.get('/getAllUserInfo', controller.user.getAllUserInfo);
   // 获得全部管理员信息

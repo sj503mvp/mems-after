@@ -1,6 +1,9 @@
 const { Controller } = require('egg');
 
 class PermissionController extends Controller {
+    /**
+     * 获得权限
+     */
     async getPermission() {
         // 获得前端传来的uid
         const { ctx, app } = this;
